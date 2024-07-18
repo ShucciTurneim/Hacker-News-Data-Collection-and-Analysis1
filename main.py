@@ -61,10 +61,11 @@ def load_stories_data_to_file(data,file_name,stories_number_to_analyse):
     return(stories_id, comments_id)   
 
 
-def load_comments_data_to_file(comments,file_name,comments_number_to_analyse):
-    for ID in range(comments_number_to_analyse):
-        current_id = comments[ID]
-        ID_data = try_data(current_id)
+def load_comments_data_to_file(comment,file_name,comments_number_to_analyse):
+    # for ID in range(comments_number_to_analyse):
+        # current_id = comments[ID]
+        # ID_data = try_data(current_id)
+        ID_data = try_data(comment)
         if ID_data != 'error':
             row_to_write = []
             id = ID_data['id'] if 'id' in ID_data  else ''
@@ -77,18 +78,23 @@ def load_comments_data_to_file(comments,file_name,comments_number_to_analyse):
         
 
 def comments_data_to_csv(stories_id,comments_id,headlines_comments, comments_number):
-    for story in stories_id:
-        comments = try_data(story)
-        comments = comments['kids'] if 'kids' in comments else 'error'
-        if comments != 'error':    
-            file_name = init_csv_data(headlines_comments,f'{story}_comments')
-            comments_number = comments_number if len(comments) >= comments_number else len(comments)
-            load_comments_data_to_file(comments,file_name,comments_number)
+    file_name = init_csv_data(headlines_comments,'comments')
+    for comments in comments_id:
+        comments_number = comments_number if len(comments) >= comments_number else len(comments)
+        for comment in range(comments_number):
+           load_comments_data_to_file(comments[comment],file_name,comments_number) 
+    # for story in stories_id:
+    #     comments = try_data(story)
+    #     comments = comments['kids'] if 'kids' in comments else 'error'
+    #     if comments != 'error':    
+    #         file_name = init_csv_data(headlines_comments,f'{story}_comments')
+    #         comments_number = comments_number if len(comments) >= comments_number else len(comments)
+    #         load_comments_data_to_file(comments,file_name,comments_number)
 
 
 def  collection_and_analysis():
     headlines_stories = [ 'ID','title', 'URL', 'score', 'author', 'time', 'number of comments']
-    headlines_comments = ['ID','author', 'text', 'time','parent_story']
+    headlines_comments = ['ID','author', 'text', 'parent_story', 'time']
     api_best_stories =  "https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty"       #url
     stories_data = extract_story_IDs(api_best_stories)
     stories_file_name = init_csv_data(headlines_stories,'stories')
